@@ -1,0 +1,63 @@
+#! /bin/bash
+
+create_user(){
+        read -p "enter the user name :" user
+        if id "$user"
+        then
+                echo "User $user exists"
+        else
+                echo " User $user doesn't exist ,creating it "
+                sudo useradd -m -s /bin/bash "$user" &>/dev/null
+                sudo passwd "$user"
+                echo "user $user created successfully"
+        fi
+}
+
+backup(){
+        read -p "enter src: " src
+        read -p "enter dest: " dest
+        if [ -d "$src" -a -d "$dest" ]
+        then
+                sudo cp -r "$src"/* "$dest"
+                echo "file backuped"
+        else
+                echo "src or dest not found"
+        fi
+}
+
+tools(){
+        read -p "enter the tool name:" tool
+        if which "$tool" &>/dev/null
+        then
+                echo "tool already exist"
+        else
+                echo "tool not exist ,installing it"
+                sudo apt update &>/dev/null
+                sudo apt install "$tool" -y &>/dev/null
+                echo "Installed"
+        fi
+}
+
+disk_usage(){
+        usage=$(df -h | awk 'NR==14 {print $5}'| sed 's/%//')
+        echo "disk usage of c drive is $usage"
+}
+
+echo "------------------------------------------------------------------------------"
+echo "menu for automation (select your choice)"
+echo "1.create user"
+echo "2.backup file"
+echo "3.install tools"
+echo "4.disk usage"
+echo "5.exit"
+echo "------------------------------------------------------------------------------"
+echo "  "
+read -p "enter choice: " choice
+
+case $choice in
+1) create_user ;;
+2) backup ;;
+3) tools ;;
+4) disk_usage ;;
+*) echo "exited"
+esac
